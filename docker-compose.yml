@@ -1,0 +1,62 @@
+version: "3.8"
+
+services:
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+
+  api:
+    build:
+      context: ./graphql-ts/
+      dockerfile: Dockerfile
+    ports:
+      - "4000:4000"
+    environment:
+      - NODE_ENV=production
+      - MONGO_URI=mongodb://root:example@mongo:27017
+    depends_on:
+      - mongo
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api.rule=Host(`api.polybank.localhost`)"
+      - "traefik.http.routers.api.entrypoints=web"
+      - "traefik.http.services.api.loadbalancer.server.port=4000"
+
+  frontend:
+    build:
+      context: ./react-ts/
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_HTTP_ENDPOINT=http://api.polybank.localhost/graphql
+    depends_on:
+      - api
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.front.rule=Host(`app.polybank.localhost`)"
+      - "traefik.http.routers.front.entrypoints=web"
+      - "traefik.http.services.front.loadbalancer.server.port=5173"
+
+  traefik:
+    image: "traefik:v3.0"
+    command:
+      - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entryPoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+volumes:
+  mongo-data:
