@@ -1,0 +1,43 @@
+# Replace this with your own GraphQL schema file!
+type Query {
+  hello: String
+  accounts: [Account]
+  account(id: String!): Account
+  transactions: [Transaction]
+  login(email: String): Account
+  accountTransactions(accountId: String!): [Transaction]
+}
+
+type Account {
+  _id: ID!
+  name: String!
+  transactions: [Transaction]
+  balance: Float!
+  email: String!
+}
+
+type Transaction {
+  _id: ID!
+  amount: Float!
+  sender: Account!
+  receiver: Account!
+  createdAt: String!
+}
+
+type Mutation {
+  CreateTransaction(input: CreateTransactionInput!): TransactionPayloadResponse
+}
+
+input CreateTransactionInput {
+  amount: Float!
+  sender: String!
+  receiver: String!
+}
+
+type TransactionPayloadResponse {
+  success: Boolean!
+  error: String
+  sender: Account
+  receiver: Account
+  transaction: Transaction
+}
