@@ -3,15 +3,12 @@ import { transactionsByAccountIdRepository } from "../repositories/transactionsB
 import { Transaction, transactionType, TransactionType } from "../type";
 import { batchAccountsByIds } from "../../accounts/repositories/batchAccountsByIds";
 import { GraphQLList, GraphQLString } from "graphql";
+import { accountLoader } from "../../../context";
 
 export const transactionsByAccount = async (
   id: string
 ): Promise<Transaction[]> => {
   const transactions = await transactionsByAccountIdRepository(id);
-
-  const accountLoader = new DataLoader<string, any>((ids) =>
-    batchAccountsByIds(ids)
-  );
 
   return transactions.map((transaction: TransactionType) => {
     return {

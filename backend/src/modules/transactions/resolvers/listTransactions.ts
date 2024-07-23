@@ -3,12 +3,9 @@ import { transactionType } from "../type";
 import { listTransactionsRepository } from "../repositories/listTransactions";
 import DataLoader from "dataloader";
 import { batchAccountsByIds } from "../../accounts/repositories/batchAccountsByIds";
+import { accountLoader } from "../../../context";
 
 export const listTransactions = async () => {
-  const accountLoader = new DataLoader<string, any>((ids) =>
-    batchAccountsByIds(ids)
-  );
-
   const transactions = await listTransactionsRepository();
 
   return transactions.map((transaction) => {
