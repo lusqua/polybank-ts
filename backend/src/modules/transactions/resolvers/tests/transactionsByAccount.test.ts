@@ -73,7 +73,10 @@ describe("transactionsByAccount", () => {
       transactionsData
     );
 
-    const result = await transactionsByAccount("accountId1");
+    const accountLoader = new DataLoader((ids) => batchAccountsByIdsMock(ids));
+    const context = { dataloaders: { accountLoader } };
+
+    const result = await transactionsByAccount("accountId1", context);
 
     expect(transactionsByAccountIdRepositoryMock).toHaveBeenCalledWith(
       "accountId1"

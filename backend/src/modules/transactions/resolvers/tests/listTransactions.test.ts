@@ -4,6 +4,7 @@ import { listTransactionsRepository } from "../../repositories/listTransactions"
 import { batchAccountsByIds } from "../../../accounts/repositories/batchAccountsByIds";
 import { TransactionType } from "../../type";
 import { ObjectId } from "mongodb";
+import DataLoader from "dataloader";
 
 // Mock the repositories
 jest.mock("../../repositories/listTransactions");
@@ -42,7 +43,11 @@ describe("listTransactions", () => {
 
   it("should return the list of transactions with accounts loaded by DataLoader", async () => {
     listTransactionsRepositoryMock.mockResolvedValueOnce(transactionsData);
-    const result = await listTransactions();
+
+    const accountLoader = new DataLoader((ids) => batchAccountsByIdsMock(ids));
+    const context = { dataloaders: { accountLoader } };
+
+    const result = await listTransactions(null, null, context);
 
     expect(listTransactionsRepositoryMock).toHaveBeenCalled();
 

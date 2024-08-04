@@ -1,12 +1,15 @@
 import { GraphQLList } from "graphql";
 import { transactionType } from "../type";
 import { listTransactionsRepository } from "../repositories/listTransactions";
-import DataLoader from "dataloader";
-import { batchAccountsByIds } from "../../accounts/repositories/batchAccountsByIds";
-import { accountLoader } from "../../../context";
+import { ContextType } from "../../../context";
 
-export const listTransactions = async () => {
+export const listTransactions = async (
+  _parent: any,
+  _args: any,
+  context: ContextType
+) => {
   const transactions = await listTransactionsRepository();
+  const { accountLoader } = context.dataloaders;
 
   return transactions.map((transaction) => {
     return {

@@ -10,6 +10,7 @@ import { koaPlayground } from "graphql-playground-middleware";
 import { connect } from "./config/mongo";
 import { config } from "./config";
 import "dotenv/config";
+import { getContext } from "./context";
 
 const app = new Koa();
 const router = new Router();
@@ -37,9 +38,7 @@ const graphApp = convert(
       rootValue: {
         request: koaContext.request,
       },
-      context: {
-        koaContext,
-      },
+      context: getContext(),
     };
   })
 );
