@@ -1,17 +1,15 @@
-import DataLoader from "dataloader";
 import { transactionsByAccountIdRepository } from "../repositories/transactionsByAccountId";
 import { Transaction, transactionType, TransactionType } from "../type";
-import { batchAccountsByIds } from "../../accounts/repositories/batchAccountsByIds";
 import { GraphQLList, GraphQLString } from "graphql";
+import { ContextType } from "../../../context";
 
 export const transactionsByAccount = async (
-  id: string
+  id: string,
+  context: ContextType
 ): Promise<Transaction[]> => {
   const transactions = await transactionsByAccountIdRepository(id);
 
-  const accountLoader = new DataLoader<string, any>((ids) =>
-    batchAccountsByIds(ids)
-  );
+  const { accountLoader } = context.dataloaders;
 
   return transactions.map((transaction: TransactionType) => {
     return {
@@ -39,7 +37,7 @@ export const accountTransactions = {
       type: GraphQLString,
     },
   },
-  resolve: async (_: any, args: any) => {
-    return transactionsByAccount(args.accountId);
+  resolve: async (_: any, args: any, context: ContextType) => {
+    return transactionsByAccount(args.accountId, context);
   },
 };
