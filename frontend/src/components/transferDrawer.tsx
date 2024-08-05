@@ -19,7 +19,7 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { transferDrawerQuery } from "./__generated__/transferDrawerQuery.graphql";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import {
   Select,
   SelectContent,
@@ -29,6 +29,7 @@ import {
 } from "../components/ui/select";
 import { accountQuery } from "../routes/__generated__/accountQuery.graphql";
 import { ReloadIcon } from "@radix-ui/react-icons";
+import { toast } from "sonner";
 
 const accountListQuery = graphql`
   query transferDrawerQuery {
@@ -42,6 +43,7 @@ const accountListQuery = graphql`
 type TransferDrawerProps = {
   accountQueryReference: PreloadedQuery<accountQuery>;
   accountQuery: GraphQLTaggedNode;
+  refetch: () => void;
 };
 
 type FormData = {
@@ -73,10 +75,12 @@ const mutation = graphql`
 export function TransferDrawer({
   accountQueryReference,
   accountQuery,
+  refetch,
 }: TransferDrawerProps) {
   const [queryReference, loadQuery] =
     useQueryLoader<transferDrawerQuery>(accountListQuery);
   const [commitMutation, isMutationInFlight] = useMutation(mutation);
+  const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
 
   useEffect(() => {
     loadQuery({});
@@ -91,15 +95,24 @@ export function TransferDrawer({
   const onSubmit = (data: FormData) => {
     if (typeof data.amount === "string") data.amount = parseFloat(data.amount);
     data.code = new Date().getTime().toString();
-    commitMutation({ variables: { input: data } });
-
-    // lógica para processar a transação
+    commitMutation({
+      variables: { input: data },
+      onCompleted: () => {
+        refetch();
+        setIsDrawerOpen(false);
+        toast("Transação realizada com sucesso");
+      },
+    });
   };
 
   return (
     <>
       {queryReference ? (
-        <Dialog aria-describedby="transaction-drawer">
+        <Dialog
+          aria-describedby="transaction-drawer"
+          open={isDrawerOpen}
+          onOpenChange={setIsDrawerOpen}
+        >
           <DialogTrigger className="w-full">
             <Button className="my-8 w-full bg-purple-500">
               Fazer transferencia
@@ -152,7 +165,7 @@ export function TransferDrawer({
                 {...register("sender")}
                 value={data.account?._id}
               />
-              <DialogFooter>
+              <DialogFooter className="mt-4">
                 <Button
                   type="submit"
                   className="bg-purple-500"

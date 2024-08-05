@@ -10,7 +10,6 @@ import { Toaster } from "./ui/sonner";
 import { toast } from "sonner";
 
 import { accountQuery } from "../routes/__generated__/accountQuery.graphql";
-import { transactionNotificationSubscription$data } from "./__generated__/transactionNotificationSubscription.graphql";
 
 const TRANSACTION_RECEIVED_SUBSCRIPTION = graphql`
   subscription transactionNotificationSubscription($email: String!) {
@@ -25,7 +24,8 @@ const TRANSACTION_RECEIVED_SUBSCRIPTION = graphql`
 const TransactionNotification: React.FC<{
   queryReference: PreloadedQuery<accountQuery>;
   query: GraphQLTaggedNode;
-}> = ({ queryReference, query }) => {
+  refetch: () => void;
+}> = ({ queryReference, query, refetch }) => {
   const data = usePreloadedQuery<accountQuery>(query, queryReference);
 
   useSubscription({
@@ -38,6 +38,7 @@ const TransactionNotification: React.FC<{
         currency: "BRL",
       }).format(transaction.amount);
       toast(`Você recebeu ${amountFormatted} de ${transaction.sender}`);
+      refetch();
     },
   });
 

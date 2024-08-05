@@ -46,6 +46,12 @@ export default function Account() {
   const [queryReference, loadQuery] =
     useQueryLoader<accountQuery>(queryAccount);
 
+  const refresh = React.useCallback(() => {
+    if (!id) return;
+
+    loadQuery({ id }, { fetchPolicy: "network-only" });
+  }, [id, loadQuery]);
+
   React.useEffect(() => {
     if (id) {
       loadQuery({ id });
@@ -78,6 +84,7 @@ export default function Account() {
           <TransferDrawer
             accountQueryReference={queryReference}
             accountQuery={queryAccount}
+            refetch={refresh}
           />
 
           <AccountTransactions
@@ -88,6 +95,7 @@ export default function Account() {
           <TransactionNotification
             queryReference={queryReference}
             query={queryAccount}
+            refetch={refresh}
           />
         </>
       )}
