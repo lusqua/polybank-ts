@@ -41,7 +41,12 @@ export default function AccountTransactions({
         {data.accountTransactions?.map((transaction) => (
           <TableRow key={transaction?._id}>
             <TableCell>{forMe(transaction!.sender)}</TableCell>
-            <TableCell>{transaction?.amount}</TableCell>
+            <TableCell>
+              {new Intl.NumberFormat("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              }).format(transaction!.amount)}
+            </TableCell>
             <TableCell>{forMe(transaction!.receiver)}</TableCell>
           </TableRow>
         ))}

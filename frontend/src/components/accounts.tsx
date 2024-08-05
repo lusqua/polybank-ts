@@ -68,7 +68,12 @@ const AccountsContent: React.FC<{
             {data.accounts.map((account) => (
               <TableRow key={account!._id}>
                 <TableCell>{account!.name}</TableCell>
-                <TableCell>{account!.balance}</TableCell>
+                <TableCell>
+                  {new Intl.NumberFormat("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  }).format(account!.balance)}
+                </TableCell>
                 <TableCell className="text-purple-600">
                   <a href={`/account/${account!._id}`}>Ver mais</a>
                 </TableCell>
