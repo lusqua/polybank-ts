@@ -8,8 +8,6 @@ export const batchAccountsByIds = async (
   hiddeBalance = true,
   accounts: Collection = database.collection(config.collections.accounts)
 ) => {
-  console.log("batchAccountsByIds", ids);
-
   const objectIds = ids.map((id) => new ObjectId(id));
 
   const accountList = await accounts
