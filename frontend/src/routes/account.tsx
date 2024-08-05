@@ -14,6 +14,7 @@ import {
   BreadcrumbSeparator,
 } from "../components/ui/breadcrumb";
 import { TransferDrawer } from "../components/transferDrawer";
+import TransactionNotification from "../components/transactionNotification";
 
 const queryAccount = graphql`
   query accountQuery($id: String!) {
@@ -34,19 +35,26 @@ const queryAccount = graphql`
       _id
       name
       balance
+      email
     }
   }
 `;
 
 export default function Account() {
-  const { id } = useParams<{ id: string }>(); // Ensure id is a string
+  const { id } = useParams<{ id: string }>();
 
   const [queryReference, loadQuery] =
     useQueryLoader<accountQuery>(queryAccount);
 
+  const refresh = React.useCallback(() => {
+    if (!id) return;
+
+    loadQuery({ id }, { fetchPolicy: "network-only" });
+  }, [id, loadQuery]);
+
   React.useEffect(() => {
     if (id) {
-      loadQuery({ id }); // Ensure id is passed correctly
+      loadQuery({ id });
     }
   }, [id, loadQuery]);
 
@@ -76,11 +84,18 @@ export default function Account() {
           <TransferDrawer
             accountQueryReference={queryReference}
             accountQuery={queryAccount}
+            refetch={refresh}
           />
 
           <AccountTransactions
             queryReference={queryReference}
             query={queryAccount}
+          />
+
+          <TransactionNotification
+            queryReference={queryReference}
+            query={queryAccount}
+            refetch={refresh}
           />
         </>
       )}

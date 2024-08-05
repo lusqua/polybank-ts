@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<2ee8101f61784d075747bfba8cc5f7aa>>
+ * @generated SignedSource<<ef99c56f831d96c2b0003d063ff317ba>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -16,6 +16,7 @@ export type accountQuery$data = {
   readonly account: {
     readonly _id: string;
     readonly balance: number;
+    readonly email: string;
     readonly name: string;
   } | null | undefined;
   readonly accountTransactions: ReadonlyArray<{
@@ -138,6 +139,13 @@ v4 = [
         "kind": "ScalarField",
         "name": "balance",
         "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "email",
+        "storageKey": null
       }
     ],
     "storageKey": null
@@ -161,16 +169,16 @@ return {
     "selections": (v4/*: any*/)
   },
   "params": {
-    "cacheID": "817c5dd3006a0d24516ab1d240029be7",
+    "cacheID": "6e160d1bd9e9a49c8d136c0013fa3b2f",
     "id": null,
     "metadata": {},
     "name": "accountQuery",
     "operationKind": "query",
-    "text": "query accountQuery(\n  $id: String!\n) {\n  accountTransactions(accountId: $id) {\n    _id\n    sender {\n      _id\n      name\n    }\n    amount\n    createdAt\n    receiver {\n      _id\n      name\n    }\n  }\n  account(id: $id) {\n    _id\n    name\n    balance\n  }\n}\n"
+    "text": "query accountQuery(\n  $id: String!\n) {\n  accountTransactions(accountId: $id) {\n    _id\n    sender {\n      _id\n      name\n    }\n    amount\n    createdAt\n    receiver {\n      _id\n      name\n    }\n  }\n  account(id: $id) {\n    _id\n    name\n    balance\n    email\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "ee0577433ce2fbbc59c8bc26c06777f1";
+(node as any).hash = "0da589080319bf33fe9108995636132f";
 
 export default node;

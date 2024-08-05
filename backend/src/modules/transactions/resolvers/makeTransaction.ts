@@ -16,6 +16,7 @@ import {
   GraphQLBoolean,
 } from "graphql";
 import { transactionType } from "../type";
+import { notifyTransactionReceived } from "./transactionReceived";
 
 type CreateTransactionArgs = {
   sender: string;
@@ -108,6 +109,12 @@ export const makeTransaction = async ({
 
   const updatedAccount = await findAccount(sender);
   const updatedToAccount = await findAccount(receiver);
+
+  notifyTransactionReceived(updatedToAccount.email, {
+    message: "You received a new transaction",
+    amount,
+    sender: updatedAccount.name,
+  });
 
   return {
     success: true,

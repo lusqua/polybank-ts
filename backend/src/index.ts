@@ -11,6 +11,8 @@ import { connect } from "./config/mongo";
 import { config } from "./config";
 import "dotenv/config";
 import { getContext } from "./context";
+import { useServer } from "graphql-ws/lib/use/ws";
+import { WebSocketServer } from "ws";
 
 const app = new Koa();
 const router = new Router();
@@ -49,6 +51,12 @@ app.use(router.routes()).use(router.allowedMethods());
 
 (async () => {
   const server = createServer(app.callback());
+  const wsServer = new WebSocketServer({
+    server,
+    path: "/graphql",
+  });
+
+  useServer({ schema, context: getContext }, wsServer);
 
   await connect();
 
