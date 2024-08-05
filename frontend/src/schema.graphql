@@ -41,3 +41,13 @@ type TransactionPayloadResponse {
   receiver: Account
   transaction: Transaction
 }
+
+type TrnsactionReceived {
+  message: String!
+  amount: Float!
+  sender: String!
+}
+
+type Subscription {
+  transactionReceived(email: String): TrnsactionReceived
+}
